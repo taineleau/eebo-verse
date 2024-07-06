@@ -16,9 +16,17 @@ According to EEBO-TCP's [navigation page](https://textcreationpartnership.org/tc
  - download indiviual xml file for each book from [here](https://github.com/Text-Creation-Partnership/EEBO-TCP-Collections-Navigations)
  - download the whole set from the public folder via [dropbox](https://www.dropbox.com/sh/pfx619wnjdck2lj/AAAeQjd_dv29oPymNoKJWfEYa?dl=0)
 
+##### Some tips on parsing the XML
+- The STC T tag, for example `<STC T="S">10558.5</STC>` , is the STC catelog number of the collection, one can search `10558.5` on EEBO online to view the images and text.
+- The volume id, for example `<VID>8932</VID>`, is the folder name of the collection in EEBO's disk dump.
+
+For more information, please refer to TCP's [FAQ page](https://textcreationpartnership.org/faq/).
+
 ## Poetry text
 
-For humanities researchers who are only interested in poetry text, we create a simply text dump here, via [google drive](https://drive.google.com/drive/u/3/folders/1WvKKMU0kE2h5yDRfgChIGSOwgCoqpeNp). The script to process the xml file to obtain poetry only text is available [here](https://gist.github.com/taineleau/d123ca95d9da4abe58c789040d4790e3). We will released the poetry text we detected in the unannotated portion of EEBO later this year.
+For humanities researchers who are only interested in poetry text, we create a simply text dump here, via [google drive](https://drive.google.com/drive/u/3/folders/1WvKKMU0kE2h5yDRfgChIGSOwgCoqpeNp). The script to process the xml file to obtain poetry only text is available [here](https://gist.github.com/taineleau/d123ca95d9da4abe58c789040d4790e3).
+
+We will released the poetry text we detected in the unannotated portion of EEBO later this year.
 
 
 ### Citing the paper
