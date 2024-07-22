@@ -7,7 +7,9 @@ If you are interested in our project and would like to get help from us, please 
 
 ## Dataset
 
-There are two parts of the data: the image and the annotation. Due to a copyright issue, we do not directly share the original resolution of the EEBO image dump to the public. However, if you are affiliated with a university or institution that has a subscription to [EEBO (Early English Books Online)](https://about.proquest.com/en/products-services/eebo/), please contact me directly to obtain a copy of the image dump or you can contact your libiary to obtain a copy of it. 
+There are two parts of the data: the image and the annotation. Due to a copyright issue, we do not directly share the original resolution of the EEBO image dump to the public. However, if you are affiliated with a university or institution that has a subscription to [EEBO (Early English Books Online)](https://about.proquest.com/en/products-services/eebo/), please contact me directly to obtain a copy of the image dump or you can contact your libiary to obtain a copy of it. The current list of institution can be found in: https://www.proquest.com/athenslogin#.
+
+We provide some helper scripts in `data_scripts` to process the XML and made it available for downstream tasks such as classification or OCR.
 
 
 #### TCP raw data
@@ -42,5 +44,5 @@ If you found the repository helpful to your research, please cite our paper and/
   year={2023},
   organization={Springer}
 }
-````
+```
 
