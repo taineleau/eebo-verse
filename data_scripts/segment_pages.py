@@ -1,32 +1,53 @@
+import os
 from bs4 import BeautifulSoup
 import re
+from markdownify import markdownify as md
 
 
-path = "/trunk/shared/tcp/all/A50079.xml"
+def seg_page(path, result_path):
+    with open(path, 'r', encoding='utf-8') as file:
+        xml = BeautifulSoup(file, "lxml")
 
-def seg_page(path="/trunk/shared/tcp/all/A50079.xml", result_path="result_seg.txt"):
-    xml = BeautifulSoup(open(path).read())
-
-    ### get rid of teiheader
-    for a in xml.find_all('teiheader'):
+    for a in xml.find_all('teiHeader'):
         a.decompose()
-    
 
-    pattern = r'<pb[^>]*>'
-    full_text = xml.prettify()
-    # Find all matches
-    matches = list(re.finditer(pattern, full_text))
+    pages = xml.find_all('pb')
 
     new_pages = []
+    last_idx = 0
 
-    last_end = 0
-    for match in matches:
-        left, right = match.span()
-        new_pages.append(full_text[last_end:left])
-        last_end = right
-    new_pages.append(full_text[last_end])
+    # Convert the BeautifulSoup object to a string only once
+    xml_str = str(xml)
 
-    with open(result_path, 'w') as wf:
+    for page in pages:
+        current_idx = xml_str.find(str(page))
+        new_pages.append(xml_str[last_idx:current_idx])
+        last_idx = current_idx + len(str(page))
+
+    new_pages.append(xml_str[last_idx:])
+
+    with open(result_path, 'w', encoding='utf-8') as wf:
         for idx, p in enumerate(new_pages):
             wf.write(f"\n\n=====>> {idx}\n")
-            wf.write(p)
+            markdown_content = md(p)
+            markdown_content = re.sub(r'\n+', '\n', markdown_content)
+            wf.write(markdown_content)
+
+
+def process_all_xml_files(input_dir, output_dir):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    for file_name in os.listdir(input_dir):
+        if file_name.endswith(".xml"):
+            input_file_path = os.path.join(input_dir, file_name)
+            output_file_path = os.path.join(
+                output_dir, file_name.replace('.xml', '.md'))
+            print(f"Processing {input_file_path} -> {output_file_path}")
+            seg_page(input_file_path, output_file_path)
+
+
+input_directory = "/trunk/shared/tcp/all"
+output_directory = "/trunk3/shared/tracytian/forced_alignment/tcp"
+
+process_all_xml_files(input_directory, output_directory)
