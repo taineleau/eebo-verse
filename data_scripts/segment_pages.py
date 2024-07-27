@@ -9,17 +9,22 @@ from bs4 import BeautifulSoup
 import re
 from markdownify import markdownify as md
 
+import os
+from bs4 import BeautifulSoup
+import re
+from markdownify import markdownify as md
+
 
 def seg_page(path, result_path=None):
     with open(path, 'r', encoding='utf-8') as file:
         xml = BeautifulSoup(file, "lxml")
 
-    for a in xml.find_all('teiHeader'):
+    for a in xml.find_all('teiheader'):
         a.decompose()
 
 
     pattern = r'<pb[^>]*>'
-    full_text = xml.prettify()
+    full_text = str(xml)#.prettify()
     # Find all matches
     matches = list(re.finditer(pattern, full_text))
 
@@ -34,19 +39,18 @@ def seg_page(path, result_path=None):
         last_end = right
         
     new_pages.append(full_text[last_end])
-
-    # discard the first page
+    
     new_pages = new_pages[1:]
     
     if result_path:
         with open(result_path, 'w', encoding='utf-8') as wf:
             for idx, (name, p) in enumerate(zip(span_name, new_pages)):
-                # wf.write(p)
                 wf.write(f"\n\n=====>> {idx} {name}\n")
                 markdown_content = md(p)
                 markdown_content = re.sub(r'\n+', '\n', markdown_content)
-                wf.write(markdown_content)
+                markdown_content = re.sub(r'(\d)\\\.', r'\1.', markdown_content)
 
+                wf.write(markdown_content)
 
 
 def process_all_xml_files(input_dir, output_dir):
