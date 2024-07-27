@@ -1,44 +1,36 @@
-import os
 from bs4 import BeautifulSoup
 import re
 from markdownify import markdownify as md
 
-def seg_page(path, result_path=None):
-    with open(path, 'r', encoding='utf-8') as file:
-        xml = BeautifulSoup(file, "lxml")
+
+def seg_page(path, result_path="result_seg.md"):
+    xml = BeautifulSoup(open(path).read())
 
     for a in xml.find_all('teiheader'):
         a.decompose()
 
-
-    pattern = r'<pb[^>]*>'
-    full_text = str(xml)#.prettify()
-    # Find all matches
-    matches = list(re.finditer(pattern, full_text))
+    pages = xml.find_all('pb')
 
     new_pages = []
-    last_end = 0
-    span_name = []
-        
-    for match in matches:
-        left, right = match.span()
-        span_name.append(full_text[left:right])
-        new_pages.append(full_text[last_end:left])
-        last_end = right
-        
-    new_pages.append(full_text[last_end])
-    
-    new_pages = new_pages[1:]
-    
-    if result_path:
-        with open(result_path, 'w', encoding='utf-8') as wf:
-            for idx, (name, p) in enumerate(zip(span_name, new_pages)):
-                wf.write(f"\n\n=====>> {idx} {name}\n")
-                markdown_content = md(p)
-                markdown_content = re.sub(r'\n+', '\n', markdown_content)
-                markdown_content = re.sub(r'(\d)\\\.', r'\1.', markdown_content)
+    last_idx = 0
 
-                wf.write(markdown_content)
+    xml_str = str(xml)
+
+    for page in pages:
+        current_idx = xml_str.find(str(page))
+        if current_idx == -1:
+            continue
+        new_pages.append(xml_str[last_idx:current_idx])
+        last_idx = current_idx + len(str(page))
+
+    new_pages.append(xml_str[last_idx:])
+
+    with open(result_path, 'w', encoding='utf-8') as wf:
+        for idx, p in enumerate(new_pages):
+            wf.write(f"\n\n=====>> {idx}\n")
+            markdown_content = md(p)
+            markdown_content = re.sub(r'\n+', '\n', markdown_content)
+            wf.write(markdown_content)
 
 
 def process_all_xml_files(input_dir, output_dir):
@@ -56,5 +48,8 @@ def process_all_xml_files(input_dir, output_dir):
 
 input_directory = "/trunk/shared/tcp/all"
 output_directory = "/trunk3/shared/tracytian/forced_alignment/tcp"
-
 process_all_xml_files(input_directory, output_directory)
+
+# seg_page("/Users/tracyqwerty/Desktop/forced_alignment/A32403.xml")
+# seg_page("/Users/tracyqwerty/Desktop/forced_alignment/A19336.xml") # very very large. takes 3 mins+
+# seg_page("/Users/tracyqwerty/Desktop/forced_alignment/N00260.xml")
