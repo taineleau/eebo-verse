@@ -3,18 +3,6 @@ from bs4 import BeautifulSoup
 import re
 from markdownify import markdownify as md
 
-
-import os
-from bs4 import BeautifulSoup
-import re
-from markdownify import markdownify as md
-
-import os
-from bs4 import BeautifulSoup
-import re
-from markdownify import markdownify as md
-
-
 def seg_page(path, result_path=None):
     with open(path, 'r', encoding='utf-8') as file:
         xml = BeautifulSoup(file, "lxml")
