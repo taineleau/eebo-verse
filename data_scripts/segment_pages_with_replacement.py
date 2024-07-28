@@ -1,44 +1,66 @@
-import os
 from bs4 import BeautifulSoup
 import re
-from markdownify import markdownify as md
+# from markdownify import markdownify as md
 
-def seg_page(path, result_path=None):
-    with open(path, 'r', encoding='utf-8') as file:
-        xml = BeautifulSoup(file, "lxml")
+
+def seg_page(path, result_path="result_seg2.md"):
+    xml = BeautifulSoup(open(path).read(), 'lxml')
+
+    # print(xml) # header is removed with hierarchy preserved
 
     for a in xml.find_all('teiheader'):
         a.decompose()
 
-
-    pattern = r'<pb[^>]*>'
-    full_text = str(xml)#.prettify()
-    # Find all matches
-    matches = list(re.finditer(pattern, full_text))
+    pages = xml.find_all('pb')
 
     new_pages = []
-    last_end = 0
-    span_name = []
-        
-    for match in matches:
-        left, right = match.span()
-        span_name.append(full_text[left:right])
-        new_pages.append(full_text[last_end:left])
-        last_end = right
-        
-    new_pages.append(full_text[last_end])
-    
-    new_pages = new_pages[1:]
-    
-    if result_path:
-        with open(result_path, 'w', encoding='utf-8') as wf:
-            for idx, (name, p) in enumerate(zip(span_name, new_pages)):
-                wf.write(f"\n\n=====>> {idx} {name}\n")
-                markdown_content = md(p)
-                markdown_content = re.sub(r'\n+', '\n', markdown_content)
-                markdown_content = re.sub(r'(\d)\\\.', r'\1.', markdown_content)
+    last_idx = 0
 
-                wf.write(markdown_content)
+    xml_str = str(xml)
+
+    for page in pages:
+        current_idx = xml_str.find(str(page))
+        if current_idx == -1:
+            continue
+        new_pages.append(xml_str[last_idx:current_idx])
+        last_idx = current_idx + len(str(page))
+
+    new_pages.append(xml_str[last_idx:])
+
+    def replace_tags(content):
+        # print(content)
+        # def replace_head_tag(match):
+        #     tag = match.group(0)
+        #     level = tag.count('n')
+        #     print(level)
+        #     content = match.group(1)
+        #     return f'{"#" * level} {content}'
+
+        # content = re.sub(r'<head>(.*?)</head>', replace_head_tag, content)
+        content = re.sub(r'<hi>(.*?)</hi>', r'**\1**', content)
+        content = re.sub(r'<g ref="char:EOLhyphen"/>',
+                         r'- [EOLhyphen]', content)
+        content = re.sub(r'<seg rend="decorInit">(.*?)</seg>',
+                         r'[\1]', content)
+        content = re.sub(r'<opener>(.*?)</opener>', r'```\1```', content)
+        content = re.sub(r'<figure/>', r'figure', content)
+        content = re.sub(r'<desc>〈◊〉</desc>', r'[unread]', content)
+        content = re.sub(r'<desc>•…</desc>', r'[unread]', content)
+        content = re.sub(r'<list>', '', content)
+        content = re.sub(r'</list>', '', content)
+        content = re.sub(r'<item>', '- ', content)
+        content = re.sub(r'</item>', '', content)
+
+        content = re.sub(r'<.*?>', '', content)
+        return content
+
+    with open(result_path, 'w', encoding='utf-8') as wf:
+        for idx, p in enumerate(new_pages):
+            wf.write(f"\n\n=====>> {idx}\n")
+            markdown_content = replace_tags(p)
+            markdown_content = re.sub(r'\n+', '\n', markdown_content)
+            markdown_content = re.sub(r'(\d)\\\.', r'\1.', markdown_content)
+            wf.write(markdown_content)
 
 
 def process_all_xml_files(input_dir, output_dir):
@@ -53,8 +75,13 @@ def process_all_xml_files(input_dir, output_dir):
             print(f"Processing {input_file_path} -> {output_file_path}")
             seg_page(input_file_path, output_file_path)
 
+# input_directory = "/trunk/shared/tcp/all"
+# output_directory = "/trunk3/shared/tracytian/forced_alignment/tcp_with_replacement/"
+# process_all_xml_files(input_directory, output_directory)
 
-input_directory = "/trunk/shared/tcp/all"
-output_directory = "/trunk3/shared/tracytian/forced_alignment/tcp"
 
-process_all_xml_files(input_directory, output_directory)
+# Usage example
+# seg_page("/Users/tracyqwerty/Desktop/forced_alignment/A32403.xml")
+seg_page("/Users/tracyqwerty/Desktop/forced_alignment/A19336.xml")
+# seg_page("/Users/tracyqwerty/Desktop/forced_alignment/A19336.xml") # very very large. takes 3 mins+
+# seg_page("/Users/tracyqwerty/Desktop/forced_alignment/N00260.xml")
