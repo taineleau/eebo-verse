@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import re
 from markdownify import markdownify as md
-
+import os
 
 def seg_page(path, result_path="result_seg.md"):
     xml = BeautifulSoup(open(path).read())
@@ -16,6 +16,7 @@ def seg_page(path, result_path="result_seg.md"):
 
     xml_str = str(xml)
 
+    
     for page in pages:
         current_idx = xml_str.find(str(page))
         if current_idx == -1:
@@ -46,10 +47,11 @@ def process_all_xml_files(input_dir, output_dir):
             seg_page(input_file_path, output_file_path)
 
 
-input_directory = "/trunk/shared/tcp/all"
-output_directory = "/trunk3/shared/tracytian/forced_alignment/tcp"
-process_all_xml_files(input_directory, output_directory)
+if __name__ == "__main__":
+    # input_directory = "/trunk/shared/tcp/all"
+    # output_directory = "/trunk3/shared/tracytian/forced_alignment/tcp"
+    # process_all_xml_files(input_directory, output_directory)
 
-# seg_page("/Users/tracyqwerty/Desktop/forced_alignment/A32403.xml")
+    seg_page("/trunk/shared/tcp/all/A32403.xml")
 # seg_page("/Users/tracyqwerty/Desktop/forced_alignment/A19336.xml") # very very large. takes 3 mins+
 # seg_page("/Users/tracyqwerty/Desktop/forced_alignment/N00260.xml")
