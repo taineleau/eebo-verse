@@ -21,8 +21,27 @@ According to EEBO-TCP's [navigation page](https://textcreationpartnership.org/tc
 ##### Some tips on parsing the XML
 - The STC T tag, for example `<STC T="S">10558.5</STC>` , is the STC catelog number of the collection, one can search `10558.5` on EEBO online to view the images and text.
 - The volume id, for example `<VID>8932</VID>`, is the folder name of the collection in EEBO's disk dump.
+- The EEBO citation ID, `<idno type="EEBO-CITATION">13672099</idno>`.
 
 For more information, please refer to TCP's [FAQ page](https://textcreationpartnership.org/faq/).
+
+
+##### How to obtain images from local CD-disk version of EEBO dumps
+
+If you also have the CD-disk version of EEBO dumps, you will find the citation ID in the `Disk*.xml`. Pleaes contact your libaray about the dumps.
+
+```<REC>
+<CITATION_ID>13561407</CITATION_ID>
+<AUTH>Bernard, of Clairvaux, Saint, 1090 or 91-1153.</AUTH>
+<TITLE>A looking-glass for all new-converts to whatsoever perswasion</TITLE>
+<DATE>1685</DATE>
+<IMAGE_ID>100288</IMAGE_ID>
+<URL>http://gateway.proquest.com/openurl?ctx_ver=Z39.88-2003&res_id=xri:eebo&rft_id=xri:eebo:image:100288</URL>
+</REC>
+```
+
+with the `IMAGE_ID`, you could locate the images of the collection.
+
 
 ## Poetry text
 

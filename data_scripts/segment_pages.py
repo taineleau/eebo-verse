@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import re
+import json, re
 from markdownify import markdownify as md
 import os
 
@@ -12,26 +12,42 @@ def seg_page(path, result_path="result_seg.md"):
     pages = xml.find_all('pb')
 
     new_pages = []
-    last_idx = 0
-
-    xml_str = str(xml)
 
     
     for page in pages:
-        current_idx = xml_str.find(str(page))
-        if current_idx == -1:
-            continue
-        new_pages.append(xml_str[last_idx:current_idx])
-        last_idx = current_idx + len(str(page))
+        image_page_id.append(page['ref'])
+        
+    pattern = r'<pb[^>]*>'
+    full_text = str(xml)
+    
+    # Find all matches
+    matches = list(re.finditer(pattern, full_text))
 
-    new_pages.append(xml_str[last_idx:])
+    new_pages = []
+    last_end = 0
+    span_name = []
+        
+    for match in matches:
+        left, right = match.span()
+        span_name.append(full_text[left:right])
+        new_pages.append(full_text[last_end:left])
+        last_end = right
+        
+    new_pages.append(full_text[last_end:])
+    
+    new_pages = new_pages[1:]
+    
+    clean_pages = []
+    for p in new_pages:
+        markdown_content = md(p)
+        markdown_content = re.sub(r'\n+', '\n', markdown_content)
+        markdown_content = re.sub(r'∣', "", markdown_content)
+        markdown_content= re.sub(r'(?<=\d)\\\.', '.', markdown_content)
+        markdown_content = markdown_content.strip("\n")
+        clean_pages.append(markdown_content)
 
-    with open(result_path, 'w', encoding='utf-8') as wf:
-        for idx, p in enumerate(new_pages):
-            wf.write(f"\n\n=====>> {idx}\n")
-            markdown_content = md(p)
-            markdown_content = re.sub(r'\n+', '\n', markdown_content)
-            wf.write(markdown_content)
+    json.dump((image_page_id, clean_pages), open(result_path, "w"))
+    return clean_pages
 
 
 def process_all_xml_files(input_dir, output_dir):
