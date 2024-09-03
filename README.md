@@ -26,9 +26,9 @@ According to EEBO-TCP's [navigation page](https://textcreationpartnership.org/tc
 For more information, please refer to TCP's [FAQ page](https://textcreationpartnership.org/faq/).
 
 
-##### How to obtain images from local CD-disk version of EEBO dumps
+##### How to obtain images from local CD-disk version of EEBO dumps?
 
-If you also have the CD-disk version of EEBO dumps, you will find the citation ID in the `Disk*.xml`. Pleaes contact your libaray about the dumps.
+If you also have the CD-disk version of EEBO dumps, you will find the citation ID in the `Disk*.xml`. Pleaes contact your univesrity libaray to obtain the dumps. An example script can be found in `data_scripts/lookup_disk.py`. 
 
 ```<REC>
 <CITATION_ID>13561407</CITATION_ID>
@@ -40,7 +40,7 @@ If you also have the CD-disk version of EEBO dumps, you will find the citation I
 </REC>
 ```
 
-with the `IMAGE_ID`, you could locate the images of the collection.
+with the `IMAGE_ID`, you could locate the images of the collection on disk. If you don't have a copy locally, you can also visit the `URL` to download the file from proquest. 
 
 
 ## Poetry text
